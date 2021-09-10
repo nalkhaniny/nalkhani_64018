@@ -1,0 +1,36 @@
+---
+title: "Assignment 1"
+author: "Noorah"
+date: "9/9/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r} 
+### Installing packeges for the graph :)
+library("ggplot2")
+```
+
+```{r} 
+### Reading my data set
+a1<-read.csv("~/Desktop/MSBA-Fall 2021/QM/cereal.csv")
+```
+
+```{r}
+### The data set has 77 rows (77 of cereal names) and we can see the mean, median and mode for all columns 
+summary(a1)
+```
+
+
+
+```{r}
+### This graph shows the average content of sugar in the cereal in each manufacturer, as shown we can tell that manufactur G and K are the highest in average sugar
+ggplot(data = a1) +
+  aes(x = mfr, y = as.integer(sugars)) +
+  geom_bar(stat = "identity", alpha = 12) +
+  labs(title = "Average Sugar In Manufacturer",
+       y = "Average Sugar",
+       x = "Manufacturer")
+```
+
+
