@@ -1,0 +1,199 @@
+---
+title: "assignment 4"
+author: "Noorah"
+date: "10/24/2021"
+---
+1. Heart Start produces automated external defibrillators (AEDs) in each of two different 
+plants (A and B). The unit production costs and monthly production capacity of the two 
+plants are indicated in the table below. The AEDs are sold through three wholesalers. The 
+shipping cost from each plant to the warehouse of each wholesaler along with the 
+monthly demand from each wholesaler are also indicated in the table. How many AEDs 
+should be produced in each plant, and how should they be distributed to each of the three 
+wholesaler warehouses so as to minimize the combined cost of production and shipping? 
+
+
+
+
+```{r}
+###including package
+library(lpSolveAPI)
+```
+Plant A:
+
+Plant A production cost = $600
+Plant A| W 1 = $22
+Plant A| W 2 = $14
+Plant A| W 3 = $30
+
+Plant B:
+Plant B production cost = $625
+Plant B| W 1 = $16
+Plant B| W 2 = $20
+Plant B| W 3 = $24
+
+
+Supply and Demand:
+Total demand = 210
+Total supply = 220
+
+We have supply more than demand
+
+
+Objective Function:
+C = 622X1 + 614X2 + 630X3 + 641X4 + 645X5 + 649X6
+
+
+Constraints:
+
+Demand:
+x1 + x4 = 80
+x2 + x5 = 60
+X3 + X6 = 70
+X7 + X8 = 10
+
+Suplly:
+X1 + X2 + X3 + X7 = 100
+X4 + X5 + X6 + X8 = 120
+
+
+```{r}
+q1 <- make.lp(0,8)
+set.objfn(q1, c(622, 614, 630, 641, 645, 649, 0, 0))
+lp.control(q1,sense="min")
+```
+
+
+```{r}
+add.constraint(q1, c(1, 0, 0, 1, 0, 0, 0, 0), "=", 80)
+add.constraint(q1, c(0, 1, 0, 0, 1, 0, 0, 0), "=", 60)
+add.constraint(q1, c(0, 0, 1, 0, 0, 1, 0, 0), "=", 70)
+add.constraint(q1, c(0, 0, 0, 0, 0, 0, 1, 1), "=", 10)
+add.constraint(q1, c(1, 1, 1, 0, 0, 0, 1, 0), "=", 100)
+add.constraint(q1, c(0, 0, 0, 1, 1, 1, 0, 1), "=", 120)
+
+set.bounds(q1, lower = c(0, 0, 0, 0, 0, 0, 0, 0), columns =1:8)
+solve(q1)
+
+
+```
+
+
+```{r}
+get.objective(q1)
+```
+
+
+```{r}
+get.variables(q1)
+
+```
+In conclusion:
+-Total cost is $132790
+-Plant A ship 60 AED to W 2 and 40 AED to W 3
+-Plant B ship 80 AED to W 1 and 30 AED to W 3
+-Plant B will reduce production by 10
+
+
+
+
+2. Oil Distribution Texxon Oil Distributors, Inc., has three active oil wells in a west Texas oil field. Well 1 has a capacity of 93 thousand barrels per day (TBD), Well 2 can produce 88 TBD, and Well 3 can produce 95 TBD. The company has five refineries along the Gulf Coast, all of which have been operating at stable demand levels. In addition, three pump stations have been built to move the oil along the pipelines from the wells to the refineries. Oil can flow from any one of the wells to any of the pump stations, and from any one of the pump stations to any of the refineries, and Texxon is looking for a minimum cost schedule. The refineries’ requirements are as follows.
+
+
+
+Well production:
+Well #1 = 93 TBD
+Well #2 = 88 TBD
+Well #3 = 95 TBD
+
+Refinery demand:
+R #1 = 30 TBD
+R #2 = 57 TBD
+R #3 = 48 TBD
+R #4 = 91 TBD
+R #5 = 48 TBD
+
+Total supply:
+93+88+95 = 276 TBD
+
+Total demand:
+30+57+48+91+48 = 274 TBD
+
+Demand is higher than supply by 2 TBD
+
+
+
+
+1) What is the minimum cost of providing oil to the refineries? Which wells are used
+to capacity in the optimal schedule? Formulation of the problem is enough.
+
+Objective function:
+
+C= 1.52x1 + 1.60x2 + 1.40x3 + 1.70x4 + 1.63x5 + 1.55x6 + 1.45x7 + 1.57x8+ 1.30x9 + 5.15x10 + 5.69x11 + 6.13x12 + 5.63x13 + 5.80x14 + 5.12x15 + 5.47x16 + 6.05x17 + 6.12x18 + 5.71x19 + 5.32x20 + 6.16x21 + 6.25x22 + 6.17x23 + 5.87x24
+
+Well consraints:
+X1 + X2 + X3 =93
+X4 + X5 + X6 =88
+X7 + X8 + X9 =95
+X25 + X26 + X27 =2 
+
+
+Refinery consraints:
+X10 + X15 + X20 =30
+X11 + X16 + X21 =57
+X12 + X17 + X22 =48
+X13 + X18 + X23 =91
+X14 + X19 + X24 =48
+
+
+Pump constraints:
+-(X1 + X4 + X7) + (X10 +X11 + X12 + X13 + X14  ) = 0
+-(X2 + X5 + X8) + (X15 +X16 + X17 + X18 + X19  ) = 0
+-(X3 + X6 + X9) + (X20 +X21 + X22 + X23 + X24  ) = 0
+
+```{r}
+q2 <- make.lp(0, 27)
+set.objfn(q2, c(1.52, 1.60, 1.40, 1.70, 1.63, 1.55, 1.45, 1.57, 1.30, 5.15, 5.69, 6.13, 5.63, 5.80, 5.12, 5.47, 6.05, 6.12, 5.71, 5.32, 6.16, 6.25, 6.17, 5.87, 0, 0, 0))
+lp.control(q2, sense= "min")
+```
+
+
+```{r}
+add.constraint(q2, c(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0), "<=", 93)
+add.constraint(q2, c(0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0), "<=", 88)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), "<=", 95)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1), "=", 2)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0), "=", 30)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0), "=", 57)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0), "=", 48)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0), "=", 91)
+add.constraint(q2, c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0), "=", 48)
+add.constraint(q2, c(-1, 0, 0, -1, 0, 0, -1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),"=", 0)
+add.constraint(q2, c(0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),"=", 0)
+add.constraint(q2, c(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0),"=", 0)
+
+set.bounds(q2, lower = c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), columns = 1:27)
+
+solve(q2)
+
+```
+
+
+```{r}
+get.objective(q2)
+```
+
+
+```{r}
+get.variables(q2)
+```
+
+-Well #1 and Well #3 used the full capacity
+-Well #2 reduce the capacity by 2 TBD  
+-Minimum cost is 1963.82 TBD
+
+
+2) Show the network diagram corresponding to the solution in (a). That is, label each
+of the arcs in the solution and verify that the flows are consistent with the given
+information.
+
+Please look at the png
